@@ -122,16 +122,10 @@ namespace Microsoft.AspNet.Routing
             var sink = await SetUp(enabled: true, handled: true);
 
             // Assert
-            Assert.Single(sink.Scopes);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(RouteCollection).FullName, scope.LoggerName);
-            Assert.Equal("RouteCollection.RouteAsync", scope.Scope);
-
             Assert.Single(sink.Writes);
 
             var write = sink.Writes[0];
             Assert.Equal(typeof(RouteCollection).FullName, write.LoggerName);
-            Assert.Equal("RouteCollection.RouteAsync", write.Scope);
             var values = Assert.IsType<RouteCollectionRouteAsyncValues>(write.State);
             Assert.Equal("RouteCollection.RouteAsync", values.Name);
             Assert.NotNull(values.Routes);
@@ -145,11 +139,6 @@ namespace Microsoft.AspNet.Routing
             var sink = await SetUp(enabled: false, handled: true);
 
             // Assert
-            Assert.Single(sink.Scopes);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(RouteCollection).FullName, scope.LoggerName);
-            Assert.Equal("RouteCollection.RouteAsync", scope.Scope);
-
             Assert.Empty(sink.Writes);
         }
 
@@ -160,17 +149,11 @@ namespace Microsoft.AspNet.Routing
             var sink = await SetUp(enabled: true, handled: false);
 
             // Assert
-            Assert.Single(sink.Scopes);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(RouteCollection).FullName, scope.LoggerName);
-            Assert.Equal("RouteCollection.RouteAsync", scope.Scope);
-
             // There is a record for IsEnabled and one for WriteCore.
             Assert.Single(sink.Writes);
 
             var write = sink.Writes[0];
             Assert.Equal(typeof(RouteCollection).FullName, write.LoggerName);
-            Assert.Equal("RouteCollection.RouteAsync", write.Scope);
             var values = Assert.IsType<RouteCollectionRouteAsyncValues>(write.State);
             Assert.Equal("RouteCollection.RouteAsync", values.Name);
             Assert.NotNull(values.Routes);
@@ -184,11 +167,6 @@ namespace Microsoft.AspNet.Routing
             var sink = await SetUp(enabled: false, handled: false);
 
             // Assert
-            Assert.Single(sink.Scopes);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(RouteCollection).FullName, scope.LoggerName);
-            Assert.Equal("RouteCollection.RouteAsync", scope.Scope);
-
             Assert.Empty(sink.Writes);
         }
 
@@ -229,7 +207,7 @@ namespace Microsoft.AspNet.Routing
 
             var route2 = CreateRoute(accept: true);
             routes.Add(route2.Object);
-
+            
             var context = CreateRouteContext("/Cool");
 
             // Act

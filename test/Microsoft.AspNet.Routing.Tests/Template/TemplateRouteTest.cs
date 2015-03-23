@@ -71,17 +71,11 @@ namespace Microsoft.AspNet.Routing.Template
             var context = result.Item2;
 
             // Assert
-            Assert.Equal(1, sink.Scopes.Count);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(TemplateRoute).FullName, scope.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", scope.Scope);
-
             Assert.Equal(1, sink.Writes.Count);
 
             var write = sink.Writes[0];
             Assert.Equal(typeof(TemplateRoute).FullName, write.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", write.Scope);
-
+            
             // verify WriteCore state contents
             var values = Assert.IsType<TemplateRouteRouteAsyncValues>(write.State);
             Assert.Equal("TemplateRoute.RouteAsync", values.Name);
@@ -104,11 +98,6 @@ namespace Microsoft.AspNet.Routing.Template
             var sink = result.Item1;
 
             // Assert
-            Assert.Equal(1, sink.Scopes.Count);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(TemplateRoute).FullName, scope.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", scope.Scope);
-
             Assert.Equal(0, sink.Writes.Count);
         }
 
@@ -122,16 +111,10 @@ namespace Microsoft.AspNet.Routing.Template
             var context = result.Item2;
 
             // Assert
-            Assert.Equal(1, sink.Scopes.Count);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(TemplateRoute).FullName, scope.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", scope.Scope);
-
             Assert.Equal(1, sink.Writes.Count);
 
             var write = sink.Writes[0];
             Assert.Equal(typeof(TemplateRoute).FullName, write.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", write.Scope);
             var values = Assert.IsType<TemplateRouteRouteAsyncValues>(write.State);
             Assert.Equal("TemplateRoute.RouteAsync", values.Name);
             Assert.Equal("Home/Index/Failure", values.RequestPath);
@@ -153,11 +136,6 @@ namespace Microsoft.AspNet.Routing.Template
             var sink = result.Item1;
 
             // Assert
-            Assert.Equal(1, sink.Scopes.Count);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(TemplateRoute).FullName, scope.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", scope.Scope);
-
             Assert.Equal(0, sink.Writes.Count);
         }
 
@@ -171,16 +149,10 @@ namespace Microsoft.AspNet.Routing.Template
             var context = result.Item2;
 
             // Assert
-            Assert.Equal(1, sink.Scopes.Count);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(TemplateRoute).FullName, scope.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", scope.Scope);
-
             Assert.Equal(1, sink.Writes.Count);
 
             var write = sink.Writes[0];
             Assert.Equal(typeof(TemplateRoute).FullName, write.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", write.Scope);
             var values = Assert.IsType<TemplateRouteRouteAsyncValues>(write.State);
             Assert.Equal("TemplateRoute.RouteAsync", values.Name);
             Assert.Equal("Home/Index/Failure", values.RequestPath);
@@ -480,11 +452,6 @@ namespace Microsoft.AspNet.Routing.Template
             var sink = result.Item1;
 
             // Assert
-            Assert.Equal(1, sink.Scopes.Count);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(TemplateRoute).FullName, scope.LoggerName);
-            Assert.Equal("TemplateRoute.RouteAsync", scope.Scope);
-
             Assert.Equal(0, sink.Writes.Count);
         }
 

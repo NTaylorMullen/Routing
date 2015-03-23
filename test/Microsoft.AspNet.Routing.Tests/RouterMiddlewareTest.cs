@@ -40,21 +40,14 @@ namespace Microsoft.AspNet.Routing
             await middleware.Invoke(httpContext);
 
             // Assert
-            Assert.Single(sink.Scopes);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(RouterMiddleware).FullName, scope.LoggerName);
-            Assert.Equal("RouterMiddleware.Invoke", scope.Scope);
-
             Assert.Single(sink.Writes);
 
             var write = sink.Writes[0];
             Assert.Equal(typeof(RouterMiddleware).FullName, write.LoggerName);
-            Assert.Equal("RouterMiddleware.Invoke", write.Scope);
             var values = Assert.IsType<RouterMiddlewareInvokeValues>(write.State);
             Assert.Equal("RouterMiddleware.Invoke", values.Name);
             Assert.Equal(false, values.Handled);
         }
-
         [Fact]
         public async void Invoke_DoesNotLogWhenDisabledAndNotHandled()
         {
@@ -82,14 +75,8 @@ namespace Microsoft.AspNet.Routing
             await middleware.Invoke(httpContext);
 
             // Assert
-            Assert.Single(sink.Scopes);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(RouterMiddleware).FullName, scope.LoggerName);
-            Assert.Equal("RouterMiddleware.Invoke", scope.Scope);
-
             Assert.Empty(sink.Writes);
         }
-
         [Fact]
         public async void Invoke_LogsCorrectValuesWhenHandled()
         {
@@ -118,17 +105,10 @@ namespace Microsoft.AspNet.Routing
             await middleware.Invoke(httpContext);
 
             // Assert
-            // exists a BeginScope, verify contents
-            Assert.Single(sink.Scopes);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(RouterMiddleware).FullName, scope.LoggerName);
-            Assert.Equal("RouterMiddleware.Invoke", scope.Scope);
-
             Assert.Single(sink.Writes);
 
             var write = sink.Writes[0];
             Assert.Equal(typeof(RouterMiddleware).FullName, write.LoggerName);
-            Assert.Equal("RouterMiddleware.Invoke", write.Scope);
             Assert.Equal(typeof(RouterMiddlewareInvokeValues), write.State.GetType());
             var values = (RouterMiddlewareInvokeValues)write.State;
             Assert.Equal("RouterMiddleware.Invoke", values.Name);
@@ -162,12 +142,6 @@ namespace Microsoft.AspNet.Routing
             await middleware.Invoke(httpContext);
 
             // Assert
-            // exists a BeginScope, verify contents
-            Assert.Single(sink.Scopes);
-            var scope = sink.Scopes[0];
-            Assert.Equal(typeof(RouterMiddleware).FullName, scope.LoggerName);
-            Assert.Equal("RouterMiddleware.Invoke", scope.Scope);
-
             Assert.Empty(sink.Writes);
         }
 
@@ -179,7 +153,7 @@ namespace Microsoft.AspNet.Routing
             {
                 _isHandled = isHandled;
             }
-
+            
             public VirtualPathData GetVirtualPath(VirtualPathContext context)
             {
                 return new VirtualPathData(this, "");

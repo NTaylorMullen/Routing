@@ -99,84 +99,82 @@ namespace Microsoft.AspNet.Routing.Template
         public async virtual Task RouteAsync([NotNull] RouteContext context)
         {
             EnsureLoggers(context.HttpContext);
-            using (_logger.BeginScope("TemplateRoute.RouteAsync"))
+
+            var requestPath = context.HttpContext.Request.Path.Value;
+
+            if (!string.IsNullOrEmpty(requestPath) && requestPath[0] == '/')
             {
-                var requestPath = context.HttpContext.Request.Path.Value;
+                requestPath = requestPath.Substring(1);
+            }
 
-                if (!string.IsNullOrEmpty(requestPath) && requestPath[0] == '/')
+            var values = _matcher.Match(requestPath);
+
+            if (values == null)
+            {
+                if (_logger.IsEnabled(LogLevel.Verbose))
                 {
-                    requestPath = requestPath.Substring(1);
+                    _logger.WriteValues(CreateRouteAsyncValues(
+                        requestPath,
+                        context.RouteData.Values,
+                        matchedValues: false,
+                        matchedConstraints: false,
+                        handled: context.IsHandled));
                 }
 
-                var values = _matcher.Match(requestPath);
+                // If we got back a null value set, that means the URI did not match
+                return;
+            }
 
-                if (values == null)
+            var oldRouteData = context.RouteData;
+
+            var newRouteData = new RouteData(oldRouteData);
+            MergeValues(newRouteData.DataTokens, _dataTokens);
+            newRouteData.Routers.Add(_target);
+            MergeValues(newRouteData.Values, values);
+
+            if (!RouteConstraintMatcher.Match(
+                Constraints,
+                newRouteData.Values,
+                context.HttpContext,
+                this,
+                RouteDirection.IncomingRequest,
+                _constraintLogger))
+            {
+                if (_logger.IsEnabled(LogLevel.Verbose))
                 {
-                    if (_logger.IsEnabled(LogLevel.Verbose))
-                    {
-                        _logger.WriteValues(CreateRouteAsyncValues(
-                            requestPath,
-                            context.RouteData.Values,
-                            matchedValues: false,
-                            matchedConstraints: false,
-                            handled: context.IsHandled));
-                    }
-
-                    // If we got back a null value set, that means the URI did not match
-                    return;
+                    _logger.WriteValues(CreateRouteAsyncValues(
+                        requestPath,
+                        newRouteData.Values,
+                        matchedValues: true,
+                        matchedConstraints: false,
+                        handled: context.IsHandled));
                 }
 
-                var oldRouteData = context.RouteData;
+                return;
+            }
 
-                var newRouteData = new RouteData(oldRouteData);
-                MergeValues(newRouteData.DataTokens, _dataTokens);
-                newRouteData.Routers.Add(_target);
-                MergeValues(newRouteData.Values, values);
+            try
+            {
+                context.RouteData = newRouteData;
 
-                if (!RouteConstraintMatcher.Match(
-                    Constraints,
-                    newRouteData.Values,
-                    context.HttpContext,
-                    this,
-                    RouteDirection.IncomingRequest,
-                    _constraintLogger))
+                await _target.RouteAsync(context);
+
+                if (_logger.IsEnabled(LogLevel.Verbose))
                 {
-                    if (_logger.IsEnabled(LogLevel.Verbose))
-                    {
-                        _logger.WriteValues(CreateRouteAsyncValues(
-                            requestPath,
-                            newRouteData.Values,
-                            matchedValues: true,
-                            matchedConstraints: false,
-                            handled: context.IsHandled));
-                    }
-
-                    return;
+                    _logger.WriteValues(CreateRouteAsyncValues(
+                        requestPath,
+                        newRouteData.Values,
+                        matchedValues: true,
+                        matchedConstraints: true,
+                        handled: context.IsHandled));
                 }
-
-                try
+            }
+            finally
+            {
+                // Restore the original values to prevent polluting the route data.
+                if (!context.IsHandled)
                 {
-                    context.RouteData = newRouteData;
-
-                    await _target.RouteAsync(context);
-
-                    if (_logger.IsEnabled(LogLevel.Verbose))
-                    {
-                        _logger.WriteValues(CreateRouteAsyncValues(
-                            requestPath,
-                            newRouteData.Values,
-                            matchedValues: true,
-                            matchedConstraints: true,
-                            handled: context.IsHandled));
-                    }
-                }
-                finally
-                {
-                    // Restore the original values to prevent polluting the route data.
-                    if (!context.IsHandled)
-                    {
-                        context.RouteData = oldRouteData;
-                    }
+                    context.RouteData = oldRouteData;
                 }
             }
         }

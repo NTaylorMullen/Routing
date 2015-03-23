@@ -56,44 +56,41 @@ namespace Microsoft.AspNet.Routing
         public async virtual Task RouteAsync(RouteContext context)
         {
             EnsureLogger(context.HttpContext);
-            using (_logger.BeginScope("RouteCollection.RouteAsync"))
+            for (var i = 0; i < Count; i++)
             {
-                for (var i = 0; i < Count; i++)
+                var route = this[i];
+
+                var oldRouteData = context.RouteData;
+
+                var newRouteData = new RouteData(oldRouteData);
+                newRouteData.Routers.Add(route);
+
+                try
                 {
-                    var route = this[i];
+                    context.RouteData = newRouteData;
 
-                    var oldRouteData = context.RouteData;
-
-                    var newRouteData = new RouteData(oldRouteData);
-                    newRouteData.Routers.Add(route);
-
-                    try
+                    await route.RouteAsync(context);
+                    if (context.IsHandled)
                     {
-                        context.RouteData = newRouteData;
-
-                        await route.RouteAsync(context);
-                        if (context.IsHandled)
-                        {
-                            break;
-                        }
-                    }
-                    finally
-                    {
-                        if (!context.IsHandled)
-                        {
-                            context.RouteData = oldRouteData;
-                        }
+                        break;
                     }
                 }
-
-                if (_logger.IsEnabled(LogLevel.Verbose))
+                finally
                 {
-                    _logger.WriteValues(new RouteCollectionRouteAsyncValues()
+                    if (!context.IsHandled)
                     {
-                        Handled = context.IsHandled,
-                        Routes = _routes
-                    });
+                        context.RouteData = oldRouteData;
+                    }
                 }
+            }
+
+            if (_logger.IsEnabled(LogLevel.Verbose))
+            {
+                _logger.WriteValues(new RouteCollectionRouteAsyncValues()
+                {
+                    Handled = context.IsHandled,
+                    Routes = _routes
+                });
             }
         }
 
