@@ -35,13 +35,10 @@ namespace Microsoft.AspNet.Builder
 
             await _router.RouteAsync(context);
 
-            if (_logger.IsEnabled(LogLevel.Verbose))
-            {
-                _logger.WriteValues(new RouterMiddlewareInvokeValues() { Handled = context.IsHandled });
-            }
-
             if (!context.IsHandled)
             {
+                _logger.LogWarning("Request did not match any routes.");
+
                 await _next.Invoke(httpContext);
             }
         }

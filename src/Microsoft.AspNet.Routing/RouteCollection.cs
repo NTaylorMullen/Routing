@@ -22,7 +22,6 @@ namespace Microsoft.AspNet.Routing
         private readonly Dictionary<string, INamedRouter> _namedRoutes =
                                     new Dictionary<string, INamedRouter>(StringComparer.OrdinalIgnoreCase);
 
-        private ILogger _logger;
         private RouteOptions _options;
 
         public IRouter this[int index]
@@ -55,7 +54,6 @@ namespace Microsoft.AspNet.Routing
 
         public async virtual Task RouteAsync(RouteContext context)
         {
-            EnsureLogger(context.HttpContext);
             for (var i = 0; i < Count; i++)
             {
                 var route = this[i];
@@ -82,15 +80,6 @@ namespace Microsoft.AspNet.Routing
                         context.RouteData = oldRouteData;
                     }
                 }
-            }
-
-            if (_logger.IsEnabled(LogLevel.Verbose))
-            {
-                _logger.WriteValues(new RouteCollectionRouteAsyncValues()
-                {
-                    Handled = context.IsHandled,
-                    Routes = _routes
-                });
             }
         }
 
@@ -236,15 +225,6 @@ namespace Microsoft.AspNet.Routing
             }
 
             return path;
-        }
-
-        private void EnsureLogger(HttpContext context)
-        {
-            if (_logger == null)
-            {
-                var factory = context.RequestServices.GetRequiredService<ILoggerFactory>();
-                _logger = factory.CreateLogger<RouteCollection>();
-            }
         }
 
         private void EnsureOptions(HttpContext context)

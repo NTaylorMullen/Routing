@@ -29,29 +29,17 @@ namespace Microsoft.AspNet.Routing
                 var constraint = kvp.Value;
                 if (!constraint.Match(httpContext, route, kvp.Key, routeValues, routeDirection))
                 {
-                    if (routeDirection.Equals(RouteDirection.IncomingRequest)
-                        && logger.IsEnabled(LogLevel.Verbose))
+                    if (routeDirection.Equals(RouteDirection.IncomingRequest))
                     {
-                        logger.WriteValues(new RouteConstraintMatcherMatchValues()
-                        {
-                            ConstraintKey = kvp.Key,
-                            Constraint = kvp.Value,
-                            Matched = false
-                        });
+                        logger.LogVerbose($"Route value for '{kvp.Key}' does not match the constraint '{kvp.Value}'.");
                     }
 
                     return false;
                 }
 
-                if (routeDirection.Equals(RouteDirection.IncomingRequest)
-                    && logger.IsEnabled(LogLevel.Verbose))
+                if (routeDirection.Equals(RouteDirection.IncomingRequest))
                 {
-                    logger.WriteValues(new RouteConstraintMatcherMatchValues()
-                    {
-                        ConstraintKey = kvp.Key,
-                        Constraint = kvp.Value,
-                        Matched = true
-                    });
+                    logger.LogVerbose($"Route value for '{kvp.Key}' matched the constraint '{kvp.Value}' successfully.");
                 }
             }
 

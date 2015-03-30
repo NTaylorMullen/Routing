@@ -113,12 +113,7 @@ namespace Microsoft.AspNet.Routing.Template
             {
                 if (_logger.IsEnabled(LogLevel.Verbose))
                 {
-                    _logger.WriteValues(CreateRouteAsyncValues(
-                        requestPath,
-                        context.RouteData.Values,
-                        matchedValues: false,
-                        matchedConstraints: false,
-                        handled: context.IsHandled));
+                    _logger.LogWarning($"Request did not match the route template '{RouteTemplate}'.");
                 }
 
                 // If we got back a null value set, that means the URI did not match
@@ -142,15 +137,15 @@ namespace Microsoft.AspNet.Routing.Template
             {
                 if (_logger.IsEnabled(LogLevel.Verbose))
                 {
-                    _logger.WriteValues(CreateRouteAsyncValues(
-                        requestPath,
-                        newRouteData.Values,
-                        matchedValues: true,
-                        matchedConstraints: false,
-                        handled: context.IsHandled));
+                    _logger.LogWarning("Request did not match all route constraints.");
                 }
 
                 return;
+            }
+
+            if (_logger.IsEnabled(LogLevel.Verbose))
+            {
+                _logger.LogInformation($"Request matched the route '{RouteTemplate}' successfully.");
             }
 
             try
@@ -158,16 +153,6 @@ namespace Microsoft.AspNet.Routing.Template
                 context.RouteData = newRouteData;
 
                 await _target.RouteAsync(context);
-
-                if (_logger.IsEnabled(LogLevel.Verbose))
-                {
-                    _logger.WriteValues(CreateRouteAsyncValues(
-                        requestPath,
-                        newRouteData.Values,
-                        matchedValues: true,
-                        matchedConstraints: true,
-                        handled: context.IsHandled));
-                }
             }
             finally
             {
