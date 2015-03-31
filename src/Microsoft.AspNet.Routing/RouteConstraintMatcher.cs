@@ -36,11 +36,6 @@ namespace Microsoft.AspNet.Routing
 
                     return false;
                 }
-
-                if (routeDirection.Equals(RouteDirection.IncomingRequest))
-                {
-                    logger.LogVerbose($"Route value for '{kvp.Key}' matched the constraint '{kvp.Value}' successfully.");
-                }
             }
 
             return true;

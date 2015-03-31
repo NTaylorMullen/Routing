@@ -111,10 +111,10 @@ namespace Microsoft.AspNet.Routing.Template
 
             if (values == null)
             {
-                if (_logger.IsEnabled(LogLevel.Verbose))
-                {
-                    _logger.LogWarning($"Request did not match the route template '{RouteTemplate}'.");
-                }
+                _logger.LogWarning(
+                        "Request did not match the route '{RouteName}' with template '{RouteTemplate}'.",
+                        Name,
+                        RouteTemplate);
 
                 // If we got back a null value set, that means the URI did not match
                 return;
@@ -135,18 +135,19 @@ namespace Microsoft.AspNet.Routing.Template
                 RouteDirection.IncomingRequest,
                 _constraintLogger))
             {
-                if (_logger.IsEnabled(LogLevel.Verbose))
-                {
-                    _logger.LogWarning("Request did not match all route constraints.");
-                }
+                _logger.LogWarning(
+                        "Request did not match all the constraints of the route '{RouteName}' " +
+                        "with template '{RouteTemplate}'.",
+                        Name,
+                        RouteTemplate);
 
                 return;
             }
 
-            if (_logger.IsEnabled(LogLevel.Verbose))
-            {
-                _logger.LogInformation($"Request matched the route '{RouteTemplate}' successfully.");
-            }
+            _logger.LogInformation(
+                    "Request successfully matched the route '{RouteName}' with template '{RouteTemplate}'.",
+                    Name,
+                    RouteTemplate);
 
             try
             {
