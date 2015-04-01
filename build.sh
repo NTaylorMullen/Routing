@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git clone git@github.com:aspnet/Helios.git
+
 if test `uname` = Darwin; then
     cachedir=~/Library/Caches/KBuild
 else
